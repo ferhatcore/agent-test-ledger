@@ -22,6 +22,7 @@ Run options:
   --artifact PATH         Existing related file relative to root; repeatable
   --agent LABEL           claude | codex | other (default: other)
   --client LABEL          cli | desktop | unknown (default: unknown)
+  --client-context PATH   Optional project-relative hook JSON (at most 64 KiB)
   --timeout MS            Direct child timeout (default: 300000)
   --max-output BYTES      Combined captured output limit (default: 1048576)
   --out FILE              New receipt file (default: .test-ledger/<UUID>.json)
@@ -37,6 +38,7 @@ Paths for --out, keys and RECORD resolve against the invoking directory.
 No automatic shell. To use a shell, explicitly name its program (e.g. sh -c).
 Commands run with your permissions; this tool is not a sandbox.
 Labels are user supplied; they do not authenticate the AI client.
+Client observations are forgeable environment/hook signals, never authenticated.
 Raw output is never stored. Arguments may contain secrets: do not put them there.
 
 Exit codes:
@@ -49,7 +51,7 @@ Legacy: node receipt.mjs make|verify|keygen retains upstream behavior.
 `;
 
 function parse(command, args) {
-  const flags = { run: ['task', 'root', 'cwd', 'artifact', 'agent', 'client', 'timeout', 'max-output', 'out', 'sign-key'], verify: ['root', 'pubkey'], report: ['root', 'pubkey', 'out'], keygen: ['out-dir'] }[command];
+  const flags = { run: ['task', 'root', 'cwd', 'artifact', 'agent', 'client', 'client-context', 'timeout', 'max-output', 'out', 'sign-key'], verify: ['root', 'pubkey'], report: ['root', 'pubkey', 'out'], keygen: ['out-dir'] }[command];
   if (!flags) throw new Error('unknown command; use --help');
   const o = { artifacts: [], positional: [] }, seen = new Set();
   for (let i = 0; i < args.length; i++) {
@@ -80,7 +82,7 @@ export async function main(argv = process.argv.slice(2)) {
     if (privateKey !== null) loadPrivateKey(privateKey);
     const root = resolve(o.root ?? '.');
     const receipt = await runLedger({ task: o.task, program: o.command[0], args: o.command.slice(1), root,
-      cwd: o.cwd, artifacts: o.artifacts, agent: o.agent, client: o.client,
+      cwd: o.cwd, artifacts: o.artifacts, agent: o.agent, client: o.client, clientContext: o['client-context'],
       timeoutMs: o.timeout === undefined ? undefined : Number(o.timeout), maxOutputBytes: o['max-output'] === undefined ? undefined : Number(o['max-output']) });
     if (privateKey !== null) signReceipt(receipt, privateKey);
     let out = o.out;

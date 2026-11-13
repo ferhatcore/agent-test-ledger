@@ -19,4 +19,6 @@ The same CLI can be called from a terminal, Claude Code or Codex. A session need
 
 `--agent` accepts `claude`, `codex` or `other`. `--client` accepts `cli`, `desktop` or `unknown`. These are record labels, not native integrations or automatic client detection.
 
+Schema-2 records separately include unauthenticated [client context](client-context.md). The exact `CLAUDECODE=1` environment marker and optional common hook metadata never choose or authenticate a label. Schema-1 records remain verifiable without observations.
+
 See the [Claude Code](claude-code.md) and [Codex](codex.md) guides for instruction-file examples, and [validation](../validation/RESULTS.md) for measured checks.

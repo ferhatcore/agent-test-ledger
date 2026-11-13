@@ -50,6 +50,7 @@ For another project, launch `ledger.mjs` by its path from that project's root. Q
 | `tests.parser` | `node-tap-summary`, `jest-json`, `vitest-json`, `pytest-junit` or `unknown` |
 | `tests.report` | Jest/Vitest/pytest report path relative to root, SHA-256 and byte count; otherwise null |
 | `tests.emptyFiles` | Selected test files that registered no tests; any nonzero value prevents `passed` |
+| `observations` | Unauthenticated environment marker and optional hook fingerprints, separate from caller labels |
 | Verification `integrity` | `consistent` or `invalid`; consistency is not authentication |
 | Verification `signature` | `not-checked`, `invalid`, `verified-with-supplied-key` |
 | Verification `freshness` | `current`, `stale`, `untracked`, `unknown` |
@@ -58,6 +59,8 @@ For another project, launch `ledger.mjs` by its path from that project's root. Q
 `run` returns 0 for recognized passing tests, exit 0 and unchanged listed snapshots; otherwise 1, while still writing a record. Without artifacts it can return 0, but freshness remains `untracked` and `currentTestEvidence` is false. `verify` returns 0 for a consistent record with no stale files and a valid signature if requested. It can return 0 for a correctly recorded failed test: inspect `tests.status` or `currentTestEvidence` for a QA gate. Invalid/stale verification returns 1. `report` uses the same rule and writes HTML even for invalid/stale records. Usage, input and output errors return 2; malformed JSON cannot be rendered.
 
 Counts require native Node TAP output (`node --test --test-reporter=tap`), a JSON report produced by a recognized direct Node Jest/Vitest invocation, or a JUnit report from a recognized direct Python pytest invocation. Other programs, npm/shell wrappers, Node spec/default output and incomplete or ambiguous summaries stay unknown. TAP requires a header, one numerical summary, consistent totals and a closing duration. These adapters observe output; a malicious command can forge it.
+
+New records use schema 2; schema-1 records remain verifiable. Client labels stay user supplied. Separate observations include only the exact `CLAUDECODE=1` environment marker and optional bounded hook metadata via `--client-context PATH`. Both can be forged or inherited and never authenticate a client or select CLI/Desktop. See [client context](docs/client-context.md) for input validation and privacy limits.
 
 ### pytest
 

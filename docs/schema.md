@@ -1,6 +1,6 @@
-# Schema 1
+# Schema 2
 
-`schema: agent-test-ledger/1`. UTF-8 JSON, at most 1 MiB and 24 nesting levels. Records are data, never executable recipes.
+New records use `schema: agent-test-ledger/2`. The verifier also accepts `agent-test-ledger/1`. UTF-8 JSON, at most 1 MiB and 24 nesting levels. Records are data, never executable recipes.
 
 | Property | Meaning |
 | --- | --- |
@@ -15,10 +15,13 @@
 | artifacts | Explicit relative paths, before/after hashes, changedDuringRun flag |
 | git | Exact-root availability, pre-run commit and dirty state; nullable when unavailable |
 | labels | Agent and client, each source user-supplied |
+| observations | Required in schema 2: unauthenticated environment and optional hook metadata |
 | selfHash | Upstream canonical SHA-256 excluding selfHash and signature |
 | signature | Optional Ed25519 signature over UTF-8 selfHash |
 
-Agents: claude, codex, other. Clients: cli, desktop, unknown. This version emits and accepts only user-supplied label provenance. Arbitrary observed claims are rejected.
+Agents: claude, codex, other. Clients: cli, desktop, unknown. Label provenance is always user-supplied. Observations are separate and never authenticate these labels or infer an interface.
+
+Schema 2 requires `observations: {authenticated: false, environment: [], hook: null}`. The environment array may contain one exact `{source: "environment", name: "CLAUDECODE", value: "1"}` entry. A non-null hook is exactly `{source: "hook-input", sha256, bytes, event, sessionSha256}` with lowercase SHA-256 values, 1–65536 bytes and a supported event. Extra observation fields, duplicate environment entries and authenticated claims are rejected. Schema 1 must not contain observations; its previous verification and passing-evidence rules remain unchanged. See [client context](client-context.md) for input validation and privacy limits.
 
 Passed requires recognized counts, a passed test, no failures/cancellations and exit 0. All skipped is skipped-only; todo-only or mixed skipped/todo is not-run. Zero tests is no-tests.
 
