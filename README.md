@@ -6,9 +6,9 @@ Process outcome, test outcome and file freshness are separate. Exit 0 does not m
 
 ## Who is this for / Current limits
 
-For developers using Claude Code, Codex or a terminal who want a local record of a test command and the freshness of explicitly listed files. Supported counts come from Node `node:test` with TAP, or Jest/Vitest JSON reports through direct `node .../bin` entrypoints (see below). The ledger has zero runtime dependencies; Jest and Vitest must already be installed in the project being tested.
+For developers using Claude Code, Codex or a terminal who want a local record of a test command and the freshness of explicitly listed files. Supported counts come from Node `node:test` with TAP, Jest/Vitest JSON reports through direct `node .../bin` entrypoints, or pytest JUnit XML through `python -m pytest` (see below). The ledger has zero runtime dependencies; Jest, Vitest or pytest must already be installed in the project being tested.
 
-`npm test` wrappers, pytest and other runners record process outcomes but keep test counts and test success `unknown`. The tool does not authenticate AI clients, track every project dependency or prove honest execution. Only listed files determine freshness, and child-process termination does not guarantee that all descendants stop.
+`npm test` wrappers and unsupported runner invocations record process outcomes but keep test counts and test success `unknown`. The tool does not authenticate AI clients, track every project dependency or prove honest execution. Only listed files determine freshness, and child-process termination does not guarantee that all descendants stop.
 
 ## Quickstart
 
@@ -47,8 +47,8 @@ For another project, launch `ledger.mjs` by its path from that project's root. Q
 | `process.status` | `completed`, `launch-error`, `timed-out`, `output-limit` |
 | `tests.status` | `passed`, `failed`, `no-tests`, `skipped-only`, `not-run`, `unknown`, `incomplete` |
 | `tests.counts` | Total, passed, failed, cancelled, skipped, todo; null if unrecognized |
-| `tests.parser` | `node-tap-summary`, `jest-json`, `vitest-json` or `unknown` |
-| `tests.report` | Jest/Vitest report path relative to root, SHA-256 and byte count; otherwise null |
+| `tests.parser` | `node-tap-summary`, `jest-json`, `vitest-json`, `pytest-junit` or `unknown` |
+| `tests.report` | Jest/Vitest/pytest report path relative to root, SHA-256 and byte count; otherwise null |
 | `tests.emptyFiles` | Selected test files that registered no tests; any nonzero value prevents `passed` |
 | Verification `integrity` | `consistent` or `invalid`; consistency is not authentication |
 | Verification `signature` | `not-checked`, `invalid`, `verified-with-supplied-key` |
@@ -57,7 +57,17 @@ For another project, launch `ledger.mjs` by its path from that project's root. Q
 
 `run` returns 0 for recognized passing tests, exit 0 and unchanged listed snapshots; otherwise 1, while still writing a record. Without artifacts it can return 0, but freshness remains `untracked` and `currentTestEvidence` is false. `verify` returns 0 for a consistent record with no stale files and a valid signature if requested. It can return 0 for a correctly recorded failed test: inspect `tests.status` or `currentTestEvidence` for a QA gate. Invalid/stale verification returns 1. `report` uses the same rule and writes HTML even for invalid/stale records. Usage, input and output errors return 2; malformed JSON cannot be rendered.
 
-Counts require native Node TAP output (`node --test --test-reporter=tap`) or a JSON report produced by a recognized direct Node Jest/Vitest invocation. Other programs, npm/shell wrappers, Node spec/default output and incomplete or ambiguous summaries stay unknown. TAP requires a header, one numerical summary, consistent totals and a closing duration. These adapters observe output; a malicious command can forge it.
+Counts require native Node TAP output (`node --test --test-reporter=tap`), a JSON report produced by a recognized direct Node Jest/Vitest invocation, or a JUnit report from a recognized direct Python pytest invocation. Other programs, npm/shell wrappers, Node spec/default output and incomplete or ambiguous summaries stay unknown. TAP requires a header, one numerical summary, consistent totals and a closing duration. These adapters observe output; a malicious command can forge it.
+
+### pytest
+
+For pytest, use its built-in JUnit reporter with a single explicit destination:
+
+```sh
+node ledger.mjs run --task "Python tests" --artifact src/app.py --out pytest-record.json -- python -m pytest --junit-xml=pytest-results.xml
+```
+
+`--junitxml` is also supported. Direct `python`, `python.exe`, `python3` and `python3.N` executables are recognized, including full paths. Python launcher and shell wrappers stay unknown. Counts describe testcase elements: setup, teardown and collection errors count as failed entries; a call failure plus a teardown error can produce two entries. Skip and xfail count as skipped; non-strict xpass counts as passed and strict xpass as failed. Exit 5 with an empty report is no-tests. See [pytest support](docs/pytest.md) for boundaries.
 
 ### Jest and Vitest
 

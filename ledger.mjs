@@ -29,6 +29,7 @@ Run options:
 
 Node counts require: node --test --test-reporter=tap [test-file ...]
 Jest counts: node node_modules/jest/bin/jest.js --json --outputFile=FILE
+pytest counts: python -m pytest --junit-xml=FILE
 Vitest counts: node node_modules/vitest/vitest.mjs run --reporter=json --outputFile=FILE
 Runner report paths are relative to --cwd, inside --root, and must be rewritten.
 Other runners and npm/shell wrappers have unknown test counts.

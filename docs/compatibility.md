@@ -8,9 +8,10 @@ Agent Test Ledger requires Node.js 22 or later and uses no runtime dependencies.
 | --- | --- | --- |
 | Node `node:test` | `node --test --test-reporter=tap` | TAP summary on stdout |
 | Jest | `node node_modules/jest/bin/jest.js --json --outputFile=FILE` | JSON report file |
+| pytest | `python -m pytest --junit-xml=FILE` | Built-in JUnit XML report |
 | Vitest | `node node_modules/vitest/vitest.mjs run --reporter=json --outputFile=FILE` | JSON report file |
 
-Jest 30.5.2 and Vitest 5.1.0 are used in the compatibility checks. The runner must be installed in the project being tested. npm/shell wrappers and other runners retain process results with unknown test counts.
+Jest 30.5.2, Vitest 5.1.0 and pytest 9.2.0 on Python 3.13 are used in the compatibility checks. The runner must be installed in the project being tested. npm/shell wrappers and other runners retain process results with unknown test counts.
 
 ## Clients
 

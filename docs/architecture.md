@@ -6,6 +6,7 @@ The CLI uses Node built-ins and a shared record format for terminals, Claude Cod
 | --- | --- |
 | `ledger.mjs` | CLI arguments, key loading and exclusive output creation |
 | `lib/ledger.mjs` | Command execution, output limits, snapshots and record verification |
+| `lib/pytest.mjs` | Direct Python pytest recognition and bounded JUnit XML parsing |
 | `lib/runners.mjs` | Recognition and parsing of direct Jest/Vitest JSON reports |
 | `lib/files.mjs` | Relative paths, root containment, file exclusions and bounded reads |
 | `lib/report.mjs` | Escaped, self-contained HTML reports |
