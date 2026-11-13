@@ -1,0 +1,86 @@
+{
+  "schema": "agent-test-ledger/1",
+  "id": "cabab419-c477-4591-994a-223c908b6574",
+  "task": "Greeting example",
+  "startedAt": "2026-11-13T17:21:18.408Z",
+  "endedAt": "2026-11-13T17:21:18.526Z",
+  "command": {
+    "program": "node",
+    "args": [
+      "--test",
+      "--test-reporter=tap",
+      "examples/tiny-cli/cli.test.mjs"
+    ],
+    "shell": false
+  },
+  "workingDirectory": ".",
+  "process": {
+    "status": "completed",
+    "exitCode": 0,
+    "signal": null,
+    "errorCode": null,
+    "timedOut": false,
+    "durationMs": 117,
+    "outputComplete": true
+  },
+  "tests": {
+    "parser": "node-tap-summary",
+    "status": "passed",
+    "counts": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "emptyFiles": 0,
+    "report": null
+  },
+  "output": {
+    "stdout": {
+      "bytes": 449,
+      "sha256": "cd00fbaae571691ae99423efcf716a259dc7381646a315195144980f4f20b1e9"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hashScope": "complete-streams",
+    "rawStored": false
+  },
+  "limits": {
+    "timeoutMs": 300000,
+    "maxOutputBytes": 1048576
+  },
+  "artifacts": [
+    {
+      "path": "examples/tiny-cli/cli.mjs",
+      "beforeSha256": "f0d67a87c6036189e3ef05030621646903643f69e2c786b56ae5b81e305c30aa",
+      "afterSha256": "f0d67a87c6036189e3ef05030621646903643f69e2c786b56ae5b81e305c30aa",
+      "changedDuringRun": false
+    },
+    {
+      "path": "examples/tiny-cli/cli.test.mjs",
+      "beforeSha256": "4c8d912d9ffcdfd504e64b69816d31740cc78fd489a358cd5da9542d271e3e28",
+      "afterSha256": "4c8d912d9ffcdfd504e64b69816d31740cc78fd489a358cd5da9542d271e3e28",
+      "changedDuringRun": false
+    }
+  ],
+  "git": {
+    "status": "unavailable",
+    "commit": null,
+    "dirty": null
+  },
+  "labels": {
+    "agent": {
+      "value": "other",
+      "source": "user-supplied"
+    },
+    "client": {
+      "value": "cli",
+      "source": "user-supplied"
+    }
+  },
+  "selfHash": "3f627ec0ee70361697bb44f27cdc4e70902bd6975b47eb79304259fee1b1e969"
+}

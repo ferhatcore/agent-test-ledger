@@ -1,0 +1,53 @@
+{
+  "name": "agent-test-ledger",
+  "version": "0.9.1",
+  "description": "Local test command records with Node summaries, file freshness and optional signatures.",
+  "keywords": [
+    "testing",
+    "node-test",
+    "tap",
+    "ai-agents",
+    "claude",
+    "codex",
+    "evidence",
+    "cli"
+  ],
+  "author": "Ferhat Kosger",
+  "contributors": [
+    "NavigatorsLab (upstream agent-receipts)"
+  ],
+  "homepage": "https://github.com/ferhatcore/agent-test-ledger#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ferhatcore/agent-test-ledger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ferhatcore/agent-test-ledger/issues"
+  },
+  "type": "module",
+  "bin": {
+    "agent-test-ledger": "ledger.mjs",
+    "agent-receipts": "receipt.mjs"
+  },
+  "scripts": {
+    "test": "node --test --test-reporter=tap receipt.test.mjs ledger.test.mjs",
+    "verify": "node --check ledger.mjs && node --check lib/ledger.mjs && node --check lib/files.mjs && node --check lib/report.mjs && node --check lib/runners.mjs && node --check receipt.mjs && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "files": [
+    "ledger.mjs",
+    "lib/",
+    "receipt.mjs",
+    "receipt.test.mjs",
+    "ledger.test.mjs",
+    "docs/",
+    "examples/",
+    "SECURITY.md",
+    "PROVENANCE.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ]
+}
