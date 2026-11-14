@@ -348,3 +348,49 @@ test('real Jest and Vitest runs are classified from their JSON reports', { skip:
     assert.equal(verifyLedger(r, { root }).currentTestEvidence, status === 'passed', name);
   }
 });
+
+test('new runner reports validate existing parents before any command runs', async t => {
+  const scratch = mkdtempSync(join(tmpdir(), 'ledger report parents '));
+  t.after(() => rmSync(scratch, { recursive: true, force: true, maxRetries: 3 }));
+  const root = join(scratch, 'project'), outside = join(scratch, 'outside');
+  mkdirSync(root); mkdirSync(outside); mkdirSync(join(root, '.claude'));
+  const link = (target, name) => symlinkSync(target, join(root, name), process.platform === 'win32' ? 'junction' : 'dir');
+  link(outside, 'escape'); link(join(root, '.claude'), 'sensitive-alias');
+  link(join(root, 'missing-target'), 'dangling'); link(join(root, 'loop'), 'loop');
+  writeFileSync(join(root, 'not-a-directory'), 'file');
+  writeFileSync(join(root, 'test_report.py'), 'def test_report():\n    open("executed", "w").write("yes")\n    assert True\n');
+  const reporter = `const fs=require('node:fs'),path=require('node:path');
+const output=process.argv.find(x=>x.startsWith('--outputFile=')).slice(13);
+fs.writeFileSync('executed',JSON.stringify({parentExisted:fs.existsSync(path.dirname(output))}));
+fs.mkdirSync(path.dirname(output),{recursive:true});
+fs.writeFileSync(output,JSON.stringify({success:true,numTotalTests:1,numPassedTests:1,numFailedTests:0,numPendingTests:0,numTodoTests:0}));`;
+  mkdirSync(join(root, 'node_modules/jest/bin'), { recursive: true });
+  mkdirSync(join(root, 'node_modules/vitest'), { recursive: true });
+  writeFileSync(join(root, 'node_modules/jest/bin/jest.js'), reporter);
+  writeFileSync(join(root, 'node_modules/vitest/vitest.mjs'), "import {createRequire} from 'node:module';const require=createRequire(import.meta.url);" + reporter);
+  const runners = [
+    destination => ({ program: process.execPath, args: ['node_modules/jest/bin/jest.js', '--json', '--outputFile=' + destination] }),
+    destination => ({ program: process.execPath, args: ['node_modules/vitest/vitest.mjs', 'run', '--reporter=json', '--outputFile=' + destination] }),
+    destination => ({ program: process.env.LEDGER_PYTHON ?? 'python', args: ['-m', 'pytest', 'test_report.py', '--junit-xml=' + destination] }),
+  ];
+  for (const destination of ['escape/out.json', 'escape/missing/deeper/out.json', 'sensitive-alias/out.json',
+    'dangling/out.json', 'dangling/missing/out.json', 'loop/out.json', 'not-a-directory/out.json', 'not-a-directory/missing/out.json']) {
+    for (const makeCommand of runners) {
+      await assert.rejects(runLedger({ task: 'Report path', root, ...makeCommand(destination) }), undefined, destination);
+      assert.equal(existsSync(join(root, 'executed')), false, 'unsafe destination cannot execute the command');
+      assert.equal(existsSync(join(outside, 'out.json')), false);
+      assert.equal(existsSync(join(outside, 'missing')), false);
+      assert.equal(existsSync(join(root, '.claude/out.json')), false);
+    }
+  }
+  mkdirSync(join(root, 'safe')); link(join(root, 'safe'), 'safe-alias');
+  const missing = 'new/missing/report.json';
+  const fresh = await runLedger({ task: 'New nested report', root, ...runners[0](missing) });
+  assert.equal(fresh.tests.status, 'passed');
+  assert.deepEqual(JSON.parse(readFileSync(join(root, 'executed'), 'utf8')), { parentExisted: false }, 'preflight does not create missing directories');
+  const alias = await runLedger({ task: 'Safe alias report', root, ...runners[1]('safe-alias/report.json') });
+  assert.equal(alias.tests.status, 'passed'); assert.equal(alias.tests.report.path, 'safe-alias/report.json');
+  assert.equal(existsSync(join(root, 'safe/report.json')), true);
+  const direct = await runLedger({ task: 'Root report', root, ...runners[0]('root-report.json') });
+  assert.equal(direct.tests.status, 'passed');
+});

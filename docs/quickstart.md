@@ -1,6 +1,6 @@
 # Quickstart
 
-For the npm CLI, use Node.js >=22 and `npx agent-test-ledger@0.9.1 --help`, or install with `npm install --global agent-test-ledger@0.9.1` and use `agent-test-ledger --help`. The commands below use the downloaded source; replace `node ledger.mjs` with `agent-test-ledger` after global installation. Run from your project root and select its actual source/test files as artifacts.
+The source checkout contains unreleased 0.10.0 features: pytest counts, client observations and managed process trees. The published npm CLI is 0.9.1: use Node.js >=22 and `npx agent-test-ledger@0.9.1 --help`, or install with `npm install --global agent-test-ledger@0.9.1`. Use the source commands below for the new features. Run from your project root and select its actual source/test files as artifacts.
 
 Use Node.js >=22. From the downloaded project root, on Windows or Linux:
 
@@ -15,4 +15,4 @@ Use fresh output names on repeated runs. Open the HTML locally. Change a tracked
 
 In another project, invoke the tool by its path from that project's root. Quote spaces. Artifact paths use `/` on both platforms. Root defaults to the invoking directory; cwd is relative to root. Record, output and key paths resolve against the invoking directory.
 
-`examples/tiny-cli` has three passing tests. `examples/greeting.json` and `examples/greeting.html` come from a real local run without personal absolute paths. Regenerate the report to refresh verification. Signing is optional. See README for status meanings, limits and exit codes.
+`examples/tiny-cli` has three passing tests. `examples/greeting.json` and `examples/greeting.html` preserve a real schema-1 run without personal absolute paths. `examples/greeting-v2.json` and its HTML report contain a real schema-2 run with confirmed Windows Job Object cleanup. New runs use schema 2 with separate client observations and process-cleanup evidence. Regenerate the report to refresh verification. Signing is optional. See README for status meanings, limits and exit codes.
