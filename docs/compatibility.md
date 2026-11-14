@@ -22,3 +22,7 @@ The same CLI can be called from a terminal, Claude Code or Codex. A session need
 Schema-2 records separately include unauthenticated [client context](client-context.md). The exact `CLAUDECODE=1` environment marker and optional common hook metadata never choose or authenticate a label. Schema-1 records remain verifiable without observations.
 
 See the [Claude Code](claude-code.md) and [Codex](codex.md) guides for instruction-file examples, and [validation](../validation/RESULTS.md) for measured checks.
+
+## Process lifecycle
+
+Managed tree scope supports Linux process groups and Windows Job Objects through bundled PowerShell 5.1/C# sources. Other platforms require explicit direct scope. The Windows launcher needs Add-Type and creation-time job attributes; setup errors fail closed. No runtime npm dependency or execution-policy change is required. See [process control](process-control.md) for measured boundaries, startup cost and escape paths.

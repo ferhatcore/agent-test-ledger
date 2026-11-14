@@ -140,7 +140,7 @@ test('schema 2 rejects forged observation shapes even when rehashed and legacy s
   }
   const tampered = structuredClone(original); tampered.observations.hook.sha256 = 'a'.repeat(64);
   assert.equal(verifyLedger(tampered, { root }).valid, false);
-  const legacy = structuredClone(original); legacy.schema = 'agent-test-ledger/1'; delete legacy.observations; rehash(legacy);
+  const legacy = structuredClone(original); legacy.schema = 'agent-test-ledger/1'; delete legacy.observations; delete legacy.processControl; rehash(legacy);
   assert.equal(verifyLedger(legacy, { root }).currentTestEvidence, true);
   const { privatePem, publicPem } = generateKeys(); signReceipt(legacy, privatePem);
   assert.equal(verifyLedger(legacy, { root, publicKeyPem: publicPem }).signature, 'verified-with-supplied-key');

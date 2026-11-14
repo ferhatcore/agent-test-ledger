@@ -9,6 +9,7 @@ New records use `schema: agent-test-ledger/2`. The verifier also accepts `agent-
 | command | Supplied program, literal args, shell false |
 | workingDirectory | Dot or path relative to supplied project root |
 | process | Status, nullable exit code/signal/error, timeout, duration, output completeness |
+| processControl | Required in schema 2: selected scope/strategy and cleanup status/error |
 | tests | Parser, status, nullable total/passed/failed/cancelled/skipped/todo counts, emptyFiles and report |
 | output | Per-stream captured bytes/SHA-256, complete or prefix scope, rawStored false |
 | limits | Requested timeout and combined byte limit |
@@ -34,3 +35,5 @@ Parsers are `node-tap-summary`, `jest-json`, `vitest-json`, `pytest-junit` and `
 The report must be newly created, or its content hash must differ from the safe pre-run file. An unchanged existing report is not reused and produces `unknown`, even if the command exits 0. Identical rewrites are conservatively unknown. Unsafe or sensitive existing report paths are rejected before execution. `--outputFile` or pytest `--junit-xml` / `--junitxml` resolves against the command's working directory and must remain inside root; the receipt and HTML do not embed the raw report. Verification checks the recorded report/command/schema linkage; it does not reread that report file. Include the report as an artifact separately only when you want it checked for freshness (artifacts must exist before execution).
 
 Legacy schema 0.1/0.2 uses `node receipt.mjs verify`; no conversion fabricates missing counts.
+
+Schema 2 requires a strictly shaped `processControl` object: `{scope, strategy, cleanup: {status, errorCode}}`. Scope is tree or direct; strategies are windows-job, posix-process-group, direct-child or unsupported. Cleanup status is confirmed, not-started, unconfirmed or failed. Confirmed/not-started have null errors; failed/unconfirmed have stable uppercase error codes. Completed commands cannot claim not-started. Unsupported strategy is a tree-scope launch error with not-started cleanup. Failed/unconfirmed cleanup prevents current passing evidence; direct scope can provide passing test evidence while confirming only the immediate child. Schema 1 has no processControl field and keeps its previous evidence semantics. See [process control](process-control.md).

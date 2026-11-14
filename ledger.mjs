@@ -4,6 +4,7 @@ import { realpathSync, mkdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { runLedger, verifyLedger } from './lib/ledger.mjs';
+import { cleanupAllowsEvidence } from './lib/execution.mjs';
 import { renderReport } from './lib/report.mjs';
 import { readReceipt, boundedRead, absent, exclusiveWrite } from './lib/files.mjs';
 import { signReceipt, generateKeys, loadPrivateKey } from './receipt.mjs';
@@ -23,7 +24,8 @@ Run options:
   --agent LABEL           claude | codex | other (default: other)
   --client LABEL          cli | desktop | unknown (default: unknown)
   --client-context PATH   Optional project-relative hook JSON (at most 64 KiB)
-  --timeout MS            Direct child timeout (default: 300000)
+  --process-scope SCOPE   tree (default) | direct (direct child only)
+  --timeout MS            Command timeout after launch (default: 300000)
   --max-output BYTES      Combined captured output limit (default: 1048576)
   --out FILE              New receipt file (default: .test-ledger/<UUID>.json)
   --sign-key FILE         Optional Ed25519 private key
@@ -36,13 +38,15 @@ Runner report paths are relative to --cwd, inside --root, and must be rewritten.
 Other runners and npm/shell wrappers have unknown test counts.
 Paths for --out, keys and RECORD resolve against the invoking directory.
 No automatic shell. To use a shell, explicitly name its program (e.g. sh -c).
-Commands run with your permissions; this tool is not a sandbox.
+Tree scope uses Linux process groups or Windows Job Objects; setup fails closed.
+Direct scope controls only the immediate child. Commands run with your permissions.
+This tool is not a sandbox; processes using other sessions or brokers can escape.
 Labels are user supplied; they do not authenticate the AI client.
 Client observations are forgeable environment/hook signals, never authenticated.
 Raw output is never stored. Arguments may contain secrets: do not put them there.
 
 Exit codes:
-  run: 0 = passed tests + exit 0 + unchanged listed snapshots; 1 = other outcome
+  run: 0 = passed tests + exit 0 + confirmed cleanup + unchanged listed snapshots; 1 = other outcome
   verify: 0 = consistent record, requested signature valid, files not stale;
           1 = invalid/stale. Failed or unknown tests can still have valid records.
   report: same as verify, but writes an HTML report even for invalid records
@@ -51,7 +55,7 @@ Legacy: node receipt.mjs make|verify|keygen retains upstream behavior.
 `;
 
 function parse(command, args) {
-  const flags = { run: ['task', 'root', 'cwd', 'artifact', 'agent', 'client', 'client-context', 'timeout', 'max-output', 'out', 'sign-key'], verify: ['root', 'pubkey'], report: ['root', 'pubkey', 'out'], keygen: ['out-dir'] }[command];
+  const flags = { run: ['task', 'root', 'cwd', 'artifact', 'agent', 'client', 'client-context', 'process-scope', 'timeout', 'max-output', 'out', 'sign-key'], verify: ['root', 'pubkey'], report: ['root', 'pubkey', 'out'], keygen: ['out-dir'] }[command];
   if (!flags) throw new Error('unknown command; use --help');
   const o = { artifacts: [], positional: [] }, seen = new Set();
   for (let i = 0; i < args.length; i++) {
@@ -82,15 +86,15 @@ export async function main(argv = process.argv.slice(2)) {
     if (privateKey !== null) loadPrivateKey(privateKey);
     const root = resolve(o.root ?? '.');
     const receipt = await runLedger({ task: o.task, program: o.command[0], args: o.command.slice(1), root,
-      cwd: o.cwd, artifacts: o.artifacts, agent: o.agent, client: o.client, clientContext: o['client-context'],
+      cwd: o.cwd, artifacts: o.artifacts, agent: o.agent, client: o.client, clientContext: o['client-context'], processScope: o['process-scope'],
       timeoutMs: o.timeout === undefined ? undefined : Number(o.timeout), maxOutputBytes: o['max-output'] === undefined ? undefined : Number(o['max-output']) });
     if (privateKey !== null) signReceipt(receipt, privateKey);
     let out = o.out;
     if (!out) { const dir = join(root, '.test-ledger'); mkdirSync(dir, { recursive: true }); out = join(dir, receipt.id + '.json'); }
     exclusiveWrite(out, JSON.stringify(receipt, null, 2) + '\n');
     const verification = verifyLedger(receipt, { root });
-    console.log(JSON.stringify({ receipt: out, process: receipt.process.status, tests: receipt.tests, freshness: verification.freshness }));
-    return receipt.tests.status === 'passed' && receipt.process.exitCode === 0 && receipt.process.signal === null && !receipt.artifacts.some(a => a.changedDuringRun) ? 0 : 1;
+    console.log(JSON.stringify({ receipt: out, process: receipt.process.status, processControl: receipt.processControl, tests: receipt.tests, freshness: verification.freshness }));
+    return receipt.tests.status === 'passed' && receipt.process.exitCode === 0 && receipt.process.signal === null && cleanupAllowsEvidence(receipt.processControl) && !receipt.artifacts.some(a => a.changedDuringRun) ? 0 : 1;
   }
   if (cmd === 'keygen') {
     if (!o['out-dir']) throw new Error('keygen requires --out-dir DIR');

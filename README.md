@@ -8,7 +8,7 @@ Process outcome, test outcome and file freshness are separate. Exit 0 does not m
 
 For developers using Claude Code, Codex or a terminal who want a local record of a test command and the freshness of explicitly listed files. Supported counts come from Node `node:test` with TAP, Jest/Vitest JSON reports through direct `node .../bin` entrypoints, or pytest JUnit XML through `python -m pytest` (see below). The ledger has zero runtime dependencies; Jest, Vitest or pytest must already be installed in the project being tested.
 
-`npm test` wrappers and unsupported runner invocations record process outcomes but keep test counts and test success `unknown`. The tool does not authenticate AI clients, track every project dependency or prove honest execution. Only listed files determine freshness, and child-process termination does not guarantee that all descendants stop.
+`npm test` wrappers and unsupported runner invocations record process outcomes but keep test counts and test success `unknown`. The tool does not authenticate AI clients, track every project dependency or prove honest execution. Only listed files determine freshness, and managed cleanup is limited to the selected Linux process group or Windows job (see [process control](docs/process-control.md)).
 
 ## Quickstart
 
@@ -44,7 +44,8 @@ For another project, launch `ledger.mjs` by its path from that project's root. Q
 
 | Field | Meaning |
 | --- | --- |
-| `process.status` | `completed`, `launch-error`, `timed-out`, `output-limit` |
+| `process.status` | `completed`, `launch-error`, `timed-out`, `output-limit`, `interrupted`, `control-error` |
+| `processControl` | Selected scope/strategy and measured cleanup result |
 | `tests.status` | `passed`, `failed`, `no-tests`, `skipped-only`, `not-run`, `unknown`, `incomplete` |
 | `tests.counts` | Total, passed, failed, cancelled, skipped, todo; null if unrecognized |
 | `tests.parser` | `node-tap-summary`, `jest-json`, `vitest-json`, `pytest-junit` or `unknown` |
@@ -56,7 +57,7 @@ For another project, launch `ledger.mjs` by its path from that project's root. Q
 | Verification `freshness` | `current`, `stale`, `untracked`, `unknown` |
 | `currentTestEvidence` | Passing tests, exit 0, valid requested signature and current explicitly listed files |
 
-`run` returns 0 for recognized passing tests, exit 0 and unchanged listed snapshots; otherwise 1, while still writing a record. Without artifacts it can return 0, but freshness remains `untracked` and `currentTestEvidence` is false. `verify` returns 0 for a consistent record with no stale files and a valid signature if requested. It can return 0 for a correctly recorded failed test: inspect `tests.status` or `currentTestEvidence` for a QA gate. Invalid/stale verification returns 1. `report` uses the same rule and writes HTML even for invalid/stale records. Usage, input and output errors return 2; malformed JSON cannot be rendered.
+`run` returns 0 for recognized passing tests, exit 0, confirmed cleanup within the selected scope and unchanged listed snapshots; otherwise 1, while still writing a record. Without artifacts it can return 0, but freshness remains `untracked` and `currentTestEvidence` is false. `verify` returns 0 for a consistent record with no stale files and a valid signature if requested. It can return 0 for a correctly recorded failed test: inspect `tests.status` or `currentTestEvidence` for a QA gate. Invalid/stale verification returns 1. `report` uses the same rule and writes HTML even for invalid/stale records. Usage, input and output errors return 2; malformed JSON cannot be rendered.
 
 Counts require native Node TAP output (`node --test --test-reporter=tap`), a JSON report produced by a recognized direct Node Jest/Vitest invocation, or a JUnit report from a recognized direct Python pytest invocation. Other programs, npm/shell wrappers, Node spec/default output and incomplete or ambiguous summaries stay unknown. TAP requires a header, one numerical summary, consistent totals and a closing duration. These adapters observe output; a malicious command can forge it.
 
