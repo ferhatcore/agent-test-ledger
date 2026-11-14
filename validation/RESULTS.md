@@ -1,6 +1,8 @@
 # Validation
 
-## 0.10.0 (unreleased)
+## 0.10.0 recorded results
+
+Recorded local measurements are listed below. The hosted results identify their tested source tree; each release's validation asset identifies its final source commit and CI run.
 
 | Check | Environment | Passed | Failed | Skipped |
 | --- | --- | ---: | ---: | ---: |
@@ -18,7 +20,7 @@ npm run verify
 node --test --test-reporter=tap package.test.mjs
 ```
 
-The real-runner Windows run sets `LEDGER_PYTHON` and `LEDGER_RUNNER_MODULES` as described in [Contributing](../CONTRIBUTING.md). Hosted CI is configured to install all three runners before verification on Windows/Linux and Node 22/24; hosted results are separate from the local measurements above.
+The real-runner Windows run sets `LEDGER_PYTHON` and `LEDGER_RUNNER_MODULES` as described in [Contributing](../CONTRIBUTING.md). [Hosted CI](https://github.com/ferhatcore/agent-test-ledger/actions/runs/43551481485) tested source tree `16cde8659b2a7f35bb7ecaac17a2c15d181dad35` and passed all four Windows/Linux and Node 22/24 jobs with real pytest/Jest/Vitest checks. Each Windows job passed 77 tests with 3 Linux-only skips; each Linux job passed 76 tests with 4 Windows-only skips. There were no failures. These hosted results are separate from the local measurements above.
 
 The package smoke creates a real npm archive, installs it offline with lifecycle scripts disabled, checks the installed executable mapping, and runs signed schema-2 records through run/verify/report. It exercises the native Windows helper or Linux process group, checks privacy and HTML escaping, verifies both genuine example schemas, and checks local Markdown links inside the installed archive. The package has zero runtime npm dependencies.
 

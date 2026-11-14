@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.0 (unreleased)
+## 0.10.0
 
 - Parse pytest's built-in JUnit XML reports with bounded, strict UTF-8/XML validation.
 - Reject unsafe existing parent directories before commands can create runner reports.
