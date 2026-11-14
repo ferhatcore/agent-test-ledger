@@ -26,3 +26,5 @@ See the [Claude Code](claude-code.md) and [Codex](codex.md) guides for instructi
 ## Process lifecycle
 
 Managed tree scope supports Linux process groups and Windows Job Objects through bundled PowerShell 5.1/C# sources. Other platforms require explicit direct scope. The Windows launcher needs Add-Type and creation-time job attributes; setup errors fail closed. No runtime npm dependency or execution-policy change is required. See [process control](process-control.md) for measured boundaries, startup cost and escape paths.
+
+The native launcher is measured on current x64 Windows. Older Windows, non-x64 systems, restricted PowerShell and unusual nested host jobs are not comprehensively tested. Automated Windows controller/helper-death and synthetic cancellation checks do not establish actual console Ctrl+C behavior. Client-hook checks use controlled inputs; they are not actual client-session trials.

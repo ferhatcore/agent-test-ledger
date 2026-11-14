@@ -9,7 +9,7 @@ This local CLI is not a sandbox or a public service. Use Node.js >=22. Commands 
 - File snapshots detect persistent before/after changes, not reverted intermediate changes. Only listed files are checked. No artifacts means `untracked` freshness. Realpath checks cannot prevent concurrent adversarial filesystem races; they are not OS isolation.
 - Outputs use exclusive creation and mode 0600. Existing outputs are not silently overwritten. Windows account ACLs must be protected separately. Use private parent directories; concurrent parent-directory replacement is outside the threat model.
 - Self-hashes check consistency, not authenticity. Optional Ed25519 signatures require a public key obtained through a trusted channel, and prove key possession rather than truthful execution. Without `--pubkey`, signatures are not cryptographically checked.
-- A malicious command can forge Node TAP output or a Jest/Vitest JSON report. Schema 1 client labels are supplied by the caller and do not authenticate the client.
+- A malicious command can forge Node TAP output, a Jest/Vitest JSON report or pytest JUnit XML. All client labels are supplied by the caller. Schema-2 environment and hook observations are forgeable and do not authenticate client origin or interface; private hook fields are excluded from the record. See [client context](docs/client-context.md).
 - Reports escape untrusted data, contain no scripts or remote assets, and use a restrictive Content Security Policy. Metadata can still be sensitive. Static reports do not refresh file hashes when opened.
 
 ## Reporting a vulnerability

@@ -1,0 +1,99 @@
+{
+  "schema": "agent-test-ledger/2",
+  "id": "dd569bd8-8daf-4750-80b6-4eca3eb06197",
+  "task": "Greeting example",
+  "startedAt": "2026-11-14T02:40:20.602Z",
+  "endedAt": "2026-11-14T02:40:21.356Z",
+  "command": {
+    "program": "node",
+    "args": [
+      "--test",
+      "--test-reporter=tap",
+      "examples/tiny-cli/cli.test.mjs"
+    ],
+    "shell": false
+  },
+  "workingDirectory": ".",
+  "process": {
+    "status": "completed",
+    "exitCode": 0,
+    "signal": null,
+    "errorCode": null,
+    "timedOut": false,
+    "durationMs": 752,
+    "outputComplete": true
+  },
+  "processControl": {
+    "scope": "tree",
+    "strategy": "windows-job",
+    "cleanup": {
+      "status": "confirmed",
+      "errorCode": null
+    }
+  },
+  "tests": {
+    "parser": "node-tap-summary",
+    "status": "passed",
+    "counts": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "emptyFiles": 0,
+    "report": null
+  },
+  "output": {
+    "stdout": {
+      "bytes": 448,
+      "sha256": "089adeaf4a486c2e90c3acf6a931b1dd31f576bf4a1e3824f6b839c9b40be858"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hashScope": "complete-streams",
+    "rawStored": false
+  },
+  "limits": {
+    "timeoutMs": 300000,
+    "maxOutputBytes": 1048576
+  },
+  "artifacts": [
+    {
+      "path": "examples/tiny-cli/cli.mjs",
+      "beforeSha256": "f0d67a87c6036189e3ef05030621646903643f69e2c786b56ae5b81e305c30aa",
+      "afterSha256": "f0d67a87c6036189e3ef05030621646903643f69e2c786b56ae5b81e305c30aa",
+      "changedDuringRun": false
+    },
+    {
+      "path": "examples/tiny-cli/cli.test.mjs",
+      "beforeSha256": "4c8d912d9ffcdfd504e64b69816d31740cc78fd489a358cd5da9542d271e3e28",
+      "afterSha256": "4c8d912d9ffcdfd504e64b69816d31740cc78fd489a358cd5da9542d271e3e28",
+      "changedDuringRun": false
+    }
+  ],
+  "git": {
+    "status": "observed",
+    "commit": "2fb16d9eed2e21f0d606166f3ee1f6ffa25d5c73",
+    "dirty": true
+  },
+  "observations": {
+    "authenticated": false,
+    "environment": [],
+    "hook": null
+  },
+  "labels": {
+    "agent": {
+      "value": "other",
+      "source": "user-supplied"
+    },
+    "client": {
+      "value": "cli",
+      "source": "user-supplied"
+    }
+  },
+  "selfHash": "439dcc87bc204c51aee72ceba91ee15c0310abdef98f309f41cc8c002d1a7b40"
+}

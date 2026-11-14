@@ -9,7 +9,7 @@ import { renderReport } from './lib/report.mjs';
 import { readReceipt, boundedRead, absent, exclusiveWrite } from './lib/files.mjs';
 import { signReceipt, generateKeys, loadPrivateKey } from './receipt.mjs';
 
-export const HELP = `Agent Test Ledger 0.9.1 — Node.js >=22, no dependencies
+export const HELP = `Agent Test Ledger 0.10.0 — Node.js >=22, no dependencies
 
 Usage:
   node ledger.mjs run --task TEXT [options] -- PROGRAM [ARG ...]
@@ -75,7 +75,7 @@ function parse(command, args) {
 }
 export async function main(argv = process.argv.slice(2)) {
   if (!argv.length || argv[0] === '--help' || argv[0] === '-h' || argv.slice(1).includes('--help') && !argv.includes('--')) { console.log(HELP); return 0; }
-  if (argv[0] === '--version') { console.log('0.9.1'); return 0; }
+  if (argv[0] === '--version') { console.log('0.10.0'); return 0; }
   const [cmd, ...rest] = argv, o = parse(cmd, rest);
   if (cmd === 'run') {
     if (!o.command?.length) throw new Error('run requires -- PROGRAM [ARG ...]');

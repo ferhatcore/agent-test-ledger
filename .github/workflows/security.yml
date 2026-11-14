@@ -13,17 +13,27 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         node: [22, 24]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: ${{ matrix.node }}
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        id: python
+        with:
+          python-version: '3.13'
       - run: npm ci --ignore-scripts
-      - run: npm run verify
-      - name: Verify real Jest and Vitest adapters
+      - run: python -m pip install --disable-pip-version-check pytest==9.2.0
+      - name: Install test runners
         shell: bash
         run: |
           npm install --prefix "$RUNNER_TEMP/runners" --no-save --no-audit --no-fund --ignore-scripts jest@30.5.2 vitest@5.1.0
-          LEDGER_RUNNER_MODULES="$RUNNER_TEMP/runners/node_modules" npm test
-      - run: npm pack --dry-run
+      - name: Verify runners, process cleanup and installed package
+        shell: bash
+        env:
+          LEDGER_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          LEDGER_RUNNER_MODULES="$RUNNER_TEMP/runners/node_modules" npm run verify
