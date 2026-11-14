@@ -3,6 +3,7 @@
 ## 0.10.0 (unreleased)
 
 - Parse pytest's built-in JUnit XML reports with bounded, strict UTF-8/XML validation.
+- Reject unsafe existing parent directories before commands can create runner reports.
 - Record unauthenticated environment and hook observations separately from caller labels.
 - Emit schema-2 records while preserving schema-1 verification and signatures.
 - Manage ordinary descendants with Linux process groups or Windows creation-time Job Objects.
