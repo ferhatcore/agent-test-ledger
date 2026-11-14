@@ -12,22 +12,24 @@ For developers using Claude Code, Codex or a terminal who want a local record of
 
 ## Quickstart
 
-This source tree contains unreleased 0.10.0 changes. The npm commands below install 0.9.1. Pytest counts, client observations and managed process trees require the source checkout until 0.10.0 is published.
+Pytest counts, client observations and managed process trees require version 0.10.0 or later. Check the CLI version before using these features. Available versions are listed on [npm](https://www.npmjs.com/package/agent-test-ledger?activeTab=versions).
 
 With Node.js >=22, run the published package without a global installation:
 
 ```sh
-npx agent-test-ledger@0.9.1 --help
+npx agent-test-ledger --version
+npx agent-test-ledger --help
 ```
 
 Or install the CLI globally:
 
 ```sh
-npm install --global agent-test-ledger@0.9.1
+npm install --global agent-test-ledger
+agent-test-ledger --version
 agent-test-ledger --help
 ```
 
-For released features, use `agent-test-ledger run|verify|report` in place of `node ledger.mjs run|verify|report`. Run from the project being tested and list its relevant files explicitly. The npm package is [agent-test-ledger](https://www.npmjs.com/package/agent-test-ledger).
+With the installed CLI, use `agent-test-ledger run|verify|report` in place of `node ledger.mjs run|verify|report`. Run from the project being tested and list its relevant files explicitly. The npm package is [agent-test-ledger](https://www.npmjs.com/package/agent-test-ledger).
 
 From this project's root, in PowerShell or a POSIX terminal:
 

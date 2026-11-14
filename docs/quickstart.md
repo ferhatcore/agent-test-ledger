@@ -1,8 +1,8 @@
 # Quickstart
 
-The source checkout contains unreleased 0.10.0 features: pytest counts, client observations and managed process trees. The published npm CLI is 0.9.1: use Node.js >=22 and `npx agent-test-ledger@0.9.1 --help`, or install with `npm install --global agent-test-ledger@0.9.1`. Use the source commands below for the new features. Run from your project root and select its actual source/test files as artifacts.
+Use Node.js 22 or later. Pytest counts, client observations and managed process trees require Agent Test Ledger 0.10.0 or later. Check the published CLI with `npx agent-test-ledger --version`, or use `agent-test-ledger --version` after installation. With the installed CLI, replace `node ledger.mjs` below with `agent-test-ledger` and run from the project being tested, selecting its actual source/test files as artifacts.
 
-Use Node.js >=22. From the downloaded project root, on Windows or Linux:
+From a downloaded source tree on Windows or Linux, try the included example:
 
 ```sh
 node ledger.mjs --help
